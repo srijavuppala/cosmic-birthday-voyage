@@ -2,7 +2,10 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Image } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Calendar, Image, ExternalLink, Key } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface SpaceEvent {
   id: string;
@@ -12,6 +15,7 @@ interface SpaceEvent {
   type: string;
   country?: string;
   image?: string;
+  url?: string;
 }
 
 const Timeline = () => {
@@ -20,70 +24,99 @@ const Timeline = () => {
   const [selectedYear, setSelectedYear] = useState<string>("all");
   const [selectedType, setSelectedType] = useState<string>("all");
   const [loading, setLoading] = useState(true);
+  const [apiKey, setApiKey] = useState("");
+  const [showApiKeyInput, setShowApiKeyInput] = useState(false);
+  const { toast } = useToast();
 
-  // DEMO DATA - In production, integrate with APIs like:
-  // - Spaceflight News API: https://api.spaceflightnewsapi.net/
-  // - NASA APIs: https://api.nasa.gov/
-  // - Space Launch Live API: https://ll.thespacedevs.com/
-  // Sample space events data (in real app, this would come from APIs)
-  const sampleEvents: SpaceEvent[] = [
-    {
-      id: "1",
-      title: "Sputnik 1 Launch",
-      date: "1957-10-04",
-      description: "First artificial satellite launched by Soviet Union, marking the beginning of the Space Age.",
-      type: "Satellite Launch",
-      country: "USSR"
-    },
-    {
-      id: "2", 
-      title: "Yuri Gagarin's Historic Flight",
-      date: "1961-04-12",
-      description: "First human spaceflight by Soviet cosmonaut Yuri Gagarin aboard Vostok 1.",
-      type: "Human Spaceflight",
-      country: "USSR"
-    },
-    {
-      id: "3",
-      title: "Apollo 11 Moon Landing",
-      date: "1969-07-20", 
-      description: "Neil Armstrong and Buzz Aldrin become first humans to walk on the Moon.",
-      type: "Moon Landing",
-      country: "USA"
-    },
-    {
-      id: "4",
-      title: "Voyager 1 Launch",
-      date: "1977-09-05",
-      description: "NASA launches Voyager 1 spacecraft to explore the outer solar system.",
-      type: "Deep Space Mission",
-      country: "USA"
-    },
-    {
-      id: "5",
-      title: "International Space Station First Module",
-      date: "1998-11-20",
-      description: "Launch of Zarya, the first module of the International Space Station.",
-      type: "Space Station",
-      country: "International"
-    },
-    {
-      id: "6",
-      title: "SpaceX Falcon Heavy Test Flight",
-      date: "2018-02-06",
-      description: "Successful test flight of SpaceX's Falcon Heavy rocket with a Tesla Roadster payload.",
-      type: "Commercial Launch",
-      country: "USA"
+  // Fetch real space events from APIs
+  const fetchSpaceEvents = async (useApiKey = false) => {
+    try {
+      setLoading(true);
+      let events: SpaceEvent[] = [];
+
+      // Try to fetch from Spaceflight News API (free)
+      try {
+        const newsResponse = await fetch('https://api.spaceflightnewsapi.net/v4/articles/?limit=10');
+        if (newsResponse.ok) {
+          const newsData = await newsResponse.json();
+          const newsEvents = newsData.results.map((article: any, index: number) => ({
+            id: `news-${article.id}`,
+            title: article.title,
+            date: article.published_at.split('T')[0],
+            description: article.summary || article.title,
+            type: "Space News",
+            image: article.image_url,
+            url: article.url
+          }));
+          events = [...events, ...newsEvents];
+        }
+      } catch (error) {
+        console.log("Spaceflight News API not available, using sample data");
+      }
+
+      // Add historical space events
+      const historicalEvents: SpaceEvent[] = [
+        {
+          id: "hist-1",
+          title: "Sputnik 1 Launch",
+          date: "1957-10-04",
+          description: "First artificial satellite launched by Soviet Union, marking the beginning of the Space Age.",
+          type: "Historic Launch",
+          country: "USSR"
+        },
+        {
+          id: "hist-2", 
+          title: "Yuri Gagarin's Historic Flight",
+          date: "1961-04-12",
+          description: "First human spaceflight by Soviet cosmonaut Yuri Gagarin aboard Vostok 1.",
+          type: "Human Spaceflight",
+          country: "USSR"
+        },
+        {
+          id: "hist-3",
+          title: "Apollo 11 Moon Landing",
+          date: "1969-07-20", 
+          description: "Neil Armstrong and Buzz Aldrin become first humans to walk on the Moon.",
+          type: "Moon Landing",
+          country: "USA"
+        },
+        {
+          id: "hist-4",
+          title: "International Space Station First Module",
+          date: "1998-11-20",
+          description: "Launch of Zarya, the first module of the International Space Station.",
+          type: "Space Station",
+          country: "International"
+        }
+      ];
+
+      events = [...events, ...historicalEvents];
+
+      // Sort events by date (newest first)
+      events.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+      setEvents(events);
+      setFilteredEvents(events);
+      
+      toast({
+        title: "Timeline Updated",
+        description: `Loaded ${events.length} space events from real APIs and historical data.`,
+      });
+      
+    } catch (error) {
+      console.error("Error fetching space events:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load space events. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   useEffect(() => {
-    // Simulate API loading
-    setTimeout(() => {
-      setEvents(sampleEvents);
-      setFilteredEvents(sampleEvents);
-      setLoading(false);
-    }, 1000);
+    fetchSpaceEvents();
   }, []);
 
   useEffect(() => {
@@ -110,14 +143,15 @@ const Timeline = () => {
 
   const getEventTypeColor = (type: string) => {
     const colors = {
-      "Satellite Launch": "bg-primary",
-      "Human Spaceflight": "bg-secondary", 
-      "Moon Landing": "bg-accent",
-      "Deep Space Mission": "bg-primary-glow",
-      "Space Station": "bg-secondary-glow",
-      "Commercial Launch": "bg-accent-glow"
+      "Historic Launch": "bg-primary text-primary-foreground",
+      "Human Spaceflight": "bg-secondary text-secondary-foreground", 
+      "Moon Landing": "bg-accent text-accent-foreground",
+      "Deep Space Mission": "bg-primary text-primary-foreground",
+      "Space Station": "bg-secondary text-secondary-foreground",
+      "Commercial Launch": "bg-accent text-accent-foreground",
+      "Space News": "bg-primary text-primary-foreground"
     };
-    return colors[type as keyof typeof colors] || "bg-muted";
+    return colors[type as keyof typeof colors] || "bg-muted text-muted-foreground";
   };
 
   if (loading) {
@@ -125,8 +159,9 @@ const Timeline = () => {
       <section id="timeline" className="py-20 px-4">
         <div className="container mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">Loading Timeline...</h2>
+            <h2 className="text-4xl font-bold mb-4 text-foreground">Loading Real Space Data...</h2>
             <div className="animate-cosmic-pulse w-16 h-16 bg-gradient-cosmic rounded-full mx-auto"></div>
+            <p className="text-muted-foreground mt-4">Fetching latest space events from APIs...</p>
           </div>
         </div>
       </section>
@@ -137,12 +172,20 @@ const Timeline = () => {
     <section id="timeline" className="py-20 px-4 relative">
       <div className="container mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4 bg-gradient-cosmic bg-clip-text text-transparent">
-            Space History Timeline
+          <h2 className="text-4xl font-bold mb-4 text-foreground">
+            Live Space History Timeline
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Explore major milestones in space exploration from the dawn of the Space Age to today.
+            Real-time space events from APIs combined with historic milestones in space exploration.
           </p>
+          <Button 
+            variant="stellar" 
+            size="sm" 
+            onClick={() => fetchSpaceEvents()}
+            className="mt-4"
+          >
+            Refresh Events
+          </Button>
         </div>
 
         {/* Filters */}
@@ -226,13 +269,29 @@ const Timeline = () => {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-muted-foreground">{event.description}</p>
-                      {event.image && (
-                        <div className="mt-4">
-                          <Button variant="ghost" size="sm">
-                            <Image className="w-4 h-4 mr-2" />
-                            View Image
-                          </Button>
+                      <p className="text-card-foreground leading-relaxed">{event.description}</p>
+                      <div className="flex gap-2 mt-4">
+                        {event.image && (
+                          <img 
+                            src={event.image} 
+                            alt={event.title}
+                            className="w-full max-w-xs h-32 object-cover rounded-lg cosmic-glow"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                        )}
+                      </div>
+                      {(event.image || event.url) && (
+                        <div className="mt-4 flex gap-2">
+                          {event.url && (
+                            <Button variant="ghost" size="sm" asChild>
+                              <a href={event.url} target="_blank" rel="noopener noreferrer">
+                                <ExternalLink className="w-4 h-4 mr-2" />
+                                Read More
+                              </a>
+                            </Button>
+                          )}
                         </div>
                       )}
                     </CardContent>
