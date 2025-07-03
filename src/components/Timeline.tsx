@@ -21,6 +21,10 @@ const Timeline = () => {
   const [selectedType, setSelectedType] = useState<string>("all");
   const [loading, setLoading] = useState(true);
 
+  // DEMO DATA - In production, integrate with APIs like:
+  // - Spaceflight News API: https://api.spaceflightnewsapi.net/
+  // - NASA APIs: https://api.nasa.gov/
+  // - Space Launch Live API: https://ll.thespacedevs.com/
   // Sample space events data (in real app, this would come from APIs)
   const sampleEvents: SpaceEvent[] = [
     {
@@ -207,17 +211,19 @@ const Timeline = () => {
                           {event.type}
                         </Badge>
                       </div>
-                      <CardDescription className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Calendar className="w-4 h-4" />
-                        {new Date(event.date).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
+                        <span>
+                          {new Date(event.date).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </span>
                         {event.country && (
                           <Badge variant="outline">{event.country}</Badge>
                         )}
-                      </CardDescription>
+                      </div>
                     </CardHeader>
                     <CardContent>
                       <p className="text-muted-foreground">{event.description}</p>
