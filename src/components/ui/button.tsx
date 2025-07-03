@@ -13,11 +13,14 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "border border-card-border bg-card/20 text-foreground hover:bg-card/40 hover:text-foreground",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        cosmic: "bg-gradient-cosmic text-foreground hover:shadow-[0_0_20px_hsl(var(--primary-glow)/0.5)] transition-all duration-300 cosmic-glow",
+        stellar: "bg-accent text-accent-foreground hover:bg-accent-glow hover:text-accent-foreground cosmic-glow",
+        nebula: "bg-secondary text-secondary-foreground hover:bg-secondary-glow hover:text-secondary-foreground cosmic-glow border border-secondary/30",
       },
       size: {
         default: "h-10 px-4 py-2",

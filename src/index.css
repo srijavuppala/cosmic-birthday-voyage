@@ -2,41 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* SpaceTime Travel Design System - Cosmic Timeline Theme
+All colors MUST be HSL for optimal theming.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Cosmic Background System */
+    --background: 222 47% 4%;
+    --foreground: 210 40% 98%;
+    --space-deep: 240 51% 8%;
+    --space-medium: 240 45% 12%;
+    --space-light: 240 40% 16%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Cosmic Cards & Surfaces */
+    --card: 240 45% 8%;
+    --card-foreground: 210 40% 98%;
+    --card-border: 240 30% 18%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    /* Interactive Elements */
+    --popover: 240 45% 8%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 222.2 47.4% 11.2%;
+    /* Stellar Primary Colors */
+    --primary: 240 75% 55%;
     --primary-foreground: 210 40% 98%;
+    --primary-glow: 240 85% 70%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Nebula Secondary Colors */
+    --secondary: 280 60% 45%;
+    --secondary-foreground: 210 40% 98%;
+    --secondary-glow: 280 70% 60%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Cosmic Accent Colors */
+    --muted: 240 20% 25%;
+    --muted-foreground: 240 15% 70%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 45 95% 68%;
+    --accent-foreground: 222 47% 4%;
+    --accent-glow: 45 100% 80%;
 
-    --destructive: 0 84.2% 60.2%;
+    /* System Colors */
+    --destructive: 0 75% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 240 25% 20%;
+    --input: 240 25% 15%;
+    --ring: 240 75% 55%;
 
-    --radius: 0.5rem;
+    /* Cosmic Gradients */
+    --gradient-cosmic: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+    --gradient-nebula: linear-gradient(180deg, hsl(var(--space-deep)), hsl(var(--space-medium)));
+    --gradient-stellar: radial-gradient(circle at center, hsl(var(--primary-glow) / 0.3), transparent 70%);
+    
+    /* Animation Variables */
+    --transition-cosmic: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --glow-animation: 0 0 20px hsl(var(--primary-glow) / 0.5);
+    
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -101,5 +124,39 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    background: var(--gradient-nebula);
+    min-height: 100vh;
+  }
+
+  /* Cosmic UI Components */
+  .cosmic-glow {
+    box-shadow: var(--glow-animation);
+    transition: var(--transition-cosmic);
+  }
+
+  .cosmic-glow:hover {
+    box-shadow: 0 0 30px hsl(var(--primary-glow) / 0.8);
+  }
+
+  .star-field {
+    background-image: 
+      radial-gradient(2px 2px at 20px 30px, hsl(var(--accent)), transparent),
+      radial-gradient(2px 2px at 40px 70px, hsl(var(--primary-glow)), transparent),
+      radial-gradient(1px 1px at 90px 40px, hsl(var(--secondary-glow)), transparent),
+      radial-gradient(1px 1px at 130px 80px, hsl(var(--accent)), transparent),
+      radial-gradient(2px 2px at 160px 30px, hsl(var(--primary-glow)), transparent);
+    background-repeat: repeat;
+    background-size: 200px 100px;
+    animation: twinkle 4s ease-in-out infinite alternate;
+  }
+
+  @keyframes twinkle {
+    0% { opacity: 0.3; }
+    100% { opacity: 1; }
+  }
+
+  .timeline-glow {
+    background: var(--gradient-cosmic);
+    box-shadow: 0 0 15px hsl(var(--primary) / 0.5);
   }
 }
