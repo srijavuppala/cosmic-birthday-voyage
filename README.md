@@ -13,7 +13,7 @@
 
 <br/>
 
-[![Cosmic Birthday Voyage Preview](https://legendary-parfait-0677aa.netlify.app/og-image.png)](https://legendary-parfait-0677aa.netlify.app/)
+
 
 </div>
 
