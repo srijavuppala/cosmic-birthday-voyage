@@ -2,8 +2,8 @@
 
 # 🚀 Cosmic Birthday Voyage
 
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Visit_Site-blueviolet?style=for-the-badge)](https://legendary-parfait-0677aa.netlify.app/)
-[![Hackathon](https://img.shields.io/badge/🏆_AstroHack_2025-Submission-orange?style=for-the-badge)](https://legendary-parfait-0677aa.netlify.app/)
+
+[![Hackathon](https://devpost.com/software/spacetime-mjv1o9)
 [![Built With](https://img.shields.io/badge/Built_With-React_%2B_TypeScript-blue?style=for-the-badge&logo=react)](https://github.com/srijavuppala/cosmic-birthday-voyage)
 [![Deployed On](https://img.shields.io/badge/Deployed_On-Netlify-00C7B7?style=for-the-badge&logo=netlify)](https://legendary-parfait-0677aa.netlify.app/)
 
